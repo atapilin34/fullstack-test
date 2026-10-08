@@ -1,87 +1,66 @@
-<?php
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Система комментариев</title>
+  <link rel="stylesheet" href="/assets/css/style.css">
+</head>
+<body>
 
-// Check PHP version.
-$minPhpVersion = '7.4'; // If you update this, don't forget to update `spark`.
-if (version_compare(PHP_VERSION, $minPhpVersion, '<')) {
-    $message = sprintf(
-        'Your PHP version must be %s or higher to run CodeIgniter. Current version: %s',
-        $minPhpVersion,
-        PHP_VERSION
-    );
+  <div class="container">
+    <header>
+      <h1>Обсуждение проекта</h1>
+    </header>
+    <!-- Контейнер для сортировки -->
+    <div class="sorting-bar">
+        <label for="sortField">Сортировать по:</label>
+        <select id="sortField">
+            <option value="created_at" selected>Дате добавления</option>
+            <option value="id">ID</option>
+        </select>
 
-    exit($message);
-}
+        <label for="sortOrder">Порядок:</label>
+        <select id="sortOrder">
+            <option value="desc" selected>По убыванию</option>
+            <option value="asc">По возрастанию</option>
+        </select>
+    </div>
 
-// Path to the front controller (this file)
-define('FCPATH', __DIR__ . DIRECTORY_SEPARATOR);
+    <!-- Контейнер для списка комментариев -->
+    <div class="comments-list"></div>
 
-// Ensure the current directory is pointing to the front controller's directory
-if (getcwd() . DIRECTORY_SEPARATOR !== FCPATH) {
-    chdir(FCPATH);
-}
+    <!-- Контейнер пагинации (кнопки страниц) -->
+    <nav class="pagination" id="pagination"></nav>
 
-/*
- *---------------------------------------------------------------
- * BOOTSTRAP THE APPLICATION
- *---------------------------------------------------------------
- * This process sets up the path constants, loads and registers
- * our autoloader, along with Composer's, loads our constants
- * and fires up an environment-specific bootstrapping.
- */
+    <!-- Форма добавления (расположена ПОД комментариями) -->
+    <section class="form-section">
+      <h2 class="form-title">Оставить комментарий</h2>
+      
+    <form id="commentForm" novalidate>
+    <div class="form-group">
+        <label for="emailInput">Email</label>
+        <input 
+        type="email" 
+        id="emailInput" 
+        name="author" 
+        placeholder="name@example.com" 
+        required 
+        maxlength="100"
+        >
+        <span class="error-message" id="emailError"></span>
+    </div>
 
-// Load our paths config file
-// This is the line that might need to be changed, depending on your folder structure.
-require FCPATH . '../app/Config/Paths.php';
-// ^^^ Change this line if you move your application folder
+    <div class="form-group">
+        <label for="text">Комментарий</label>
+        <textarea id="text" name="text" placeholder="Ваше сообщение..." required maxlength="1000"></textarea>
+    </div>
 
-$paths = new Config\Paths();
+    <button type="submit" class="submit-btn">Отправить</button>
+    </form>
+    </section>
+  </div>
 
-// Location of the framework bootstrap file.
-require rtrim($paths->systemDirectory, '\\/ ') . DIRECTORY_SEPARATOR . 'bootstrap.php';
-
-// Load environment settings from .env files into $_SERVER and $_ENV
-require_once SYSTEMPATH . 'Config/DotEnv.php';
-(new CodeIgniter\Config\DotEnv(ROOTPATH))->load();
-
-// Define ENVIRONMENT
-if (! defined('ENVIRONMENT')) {
-    define('ENVIRONMENT', env('CI_ENVIRONMENT', 'production'));
-}
-
-// Load Config Cache
-// $factoriesCache = new \CodeIgniter\Cache\FactoriesCache();
-// $factoriesCache->load('config');
-// ^^^ Uncomment these lines if you want to use Config Caching.
-
-/*
- * ---------------------------------------------------------------
- * GRAB OUR CODEIGNITER INSTANCE
- * ---------------------------------------------------------------
- *
- * The CodeIgniter class contains the core functionality to make
- * the application run, and does all the dirty work to get
- * the pieces all working together.
- */
-
-$app = Config\Services::codeigniter();
-$app->initialize();
-$context = is_cli() ? 'php-cli' : 'web';
-$app->setContext($context);
-
-/*
- *---------------------------------------------------------------
- * LAUNCH THE APPLICATION
- *---------------------------------------------------------------
- * Now that everything is set up, it's time to actually fire
- * up the engines and make this app do its thang.
- */
-
-$app->run();
-
-// Save Config Cache
-// $factoriesCache->save('config');
-// ^^^ Uncomment this line if you want to use Config Caching.
-
-// Exits the application, setting the exit code for CLI-based applications
-// that might be watching.
-exit(EXIT_SUCCESS);
+  <script src="/assets/js/app.js"></script>
+</body>
+</html>
